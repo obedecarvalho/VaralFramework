@@ -18,7 +18,7 @@ public class DAOUtil {
 	
 	private static final String CONNECTION_STRING = "jdbc:sqlite:%s";
 	//TODO: implementar forma de passar como parametro/salvar lista de connections
-	private static final String DEFAULT_DB_NAME = "dados.db";
+	private static final String DEFAULT_DB_NAME = "dados/dados.db";
 
 	public static Connection getConnection() throws Exception {
 		if (isEmpty(connection)) {
