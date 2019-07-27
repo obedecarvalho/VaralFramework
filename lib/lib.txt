@@ -1,0 +1,9 @@
+SQLite
+    Url: https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    Versão: 3.25.2
+Log4j Core
+    Url: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    Versão: 2.11.1
+Log4j API
+    Url: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    Versão: 2.11.1
