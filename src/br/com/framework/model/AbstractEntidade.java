@@ -1,10 +1,11 @@
 package br.com.framework.model;
 
 import br.com.framework.model.annotation.DBColumn;
+import br.com.framework.model.annotation.DataType;
 
 public abstract class AbstractEntidade {
 
-	@DBColumn(columnName="id",dataType=DataType.INTEGER)
+	@DBColumn(columnName="id", dataType=DataType.INTEGER)
 	private int id;
 
 	public int getId() {

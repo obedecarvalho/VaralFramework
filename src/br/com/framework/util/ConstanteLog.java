@@ -1,6 +1,6 @@
 package br.com.framework.util;
 
-public class ConstanteLog {
+public abstract class ConstanteLog {
 
 	//DB DAO
 	public static final String LOG_DB_DELETE = "Delete: {sql: %s, id: %d, total: %d}";

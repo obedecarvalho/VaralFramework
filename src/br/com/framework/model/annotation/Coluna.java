@@ -1,4 +1,4 @@
-package br.com.framework.model;
+package br.com.framework.model.annotation;
 
 import br.com.framework.util.ValidatorUtil;
 
@@ -33,7 +33,8 @@ public class Coluna {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
+	//TODO: melhorar retorno de value por tipo
 	public Integer getValueInteger() {
 		if (type.isInteger() && ValidatorUtil.isNotEmpty(getValue())) {
 			try {

@@ -7,15 +7,38 @@ import java.util.List;
 import java.util.Map;
 
 import br.com.framework.model.AbstractEntidade;
-import br.com.framework.model.Coluna;
-import br.com.framework.model.DataType;
+import br.com.framework.model.annotation.Coluna;
 import br.com.framework.model.annotation.DBColumn;
 import br.com.framework.model.annotation.DBTable;
-import br.com.framework.util.StringUtil;
 import br.com.framework.util.ValidatorUtil;
 
+/**
+ * Classe utilizada para facilitar a manipulação de Annotation declaradas em classes.
+ * @author obede
+ *
+ */
 public class AnnotationUtil {
 	
+	/**
+	 * Retorna o mapeamento de DBColumn declarada em uma entidade e o Field correspondente.
+	 * Não busca por campos da super classe (AbstractEntidade).
+	 *
+	 * @param clazz
+	 * @param superClazz
+	 * @return
+	 */
+	static public Map<DBColumn,Field> getDBColumns(Class<? extends AbstractEntidade> clazz) {
+		return getDBColumns(clazz, false);
+	}
+
+	/**
+	 * Retorna o mapeamento de DBColumn declarada em uma entidade e o Field correspondente.
+	 * Se superClazz == true busca por campos da super classe (AbstractEntidade).
+	 *
+	 * @param clazz
+	 * @param superClazz
+	 * @return
+	 */
 	static public Map<DBColumn,Field> getDBColumns(Class<? extends AbstractEntidade> clazz, boolean superClazz) {
 		if (ValidatorUtil.isEmpty(clazz)) {
 			return null;
@@ -23,11 +46,13 @@ public class AnnotationUtil {
 
 		Map<DBColumn,Field> dbColumns = new HashMap<DBColumn,Field>();
 		Field[] fields = null;
-		
+
+		// Buscar campos da Super Classe
 		if (superClazz) {
 			fields = AbstractEntidade.class.getDeclaredFields();
 			
 			for (Field f : fields) {
+				//se for column declarada
 				if (f.isAnnotationPresent(DBColumn.class)) {
 					DBColumn dbColumn = f.getAnnotation(DBColumn.class);
 					dbColumns.put(dbColumn, f);			
@@ -38,6 +63,7 @@ public class AnnotationUtil {
 		fields = clazz.getDeclaredFields();
 
 		for (Field f : fields) {
+			//se for column declarada
 			if (f.isAnnotationPresent(DBColumn.class)) {
 				DBColumn dbColumn = f.getAnnotation(DBColumn.class);
 				dbColumns.put(dbColumn, f);
@@ -46,33 +72,21 @@ public class AnnotationUtil {
 		return dbColumns;		
 	}
 	
-	/*
-	 * static public Map<DataType,List<Field>> getDBColumnsByType(Class<? extends
-	 * AbstractEntidade> clazz){ Map<DBColumn,Field> dbColumns =
-	 * getDBColumns(clazz); Map<DataType,List<Field>> dbColumnsByType = new
-	 * HashMap<DataType, List<Field>>();
-	 * 
-	 * for (DataType dt : DataType.values()) { dbColumnsByType.put(dt, new
-	 * ArrayList<Field>()); }
-	 * 
-	 * for (DBColumn dbc : dbColumns.keySet()) { List<Field> list =
-	 * dbColumnsByType.get(dbc.dataType()); list.add(dbColumns.get(dbc)); }
-	 * 
-	 * return dbColumnsByType;
-	 * 
-	 * }
+	/**
+	 * Busca a annotation de uma Classe específica.
+	 * @param clazz
+	 * @return
 	 */
-	
-	static public DBTable getDBTable(Class<? extends AbstractEntidade> clazz) {
+	static private DBTable getDBTable(Class<? extends AbstractEntidade> clazz) {
 		return clazz.getDeclaredAnnotation(DBTable.class);
 	}
 
 	/**
 	 * Retorna o tableName da clazz.
-	 * 
+	 *
 	 * O tableName é definido na annotation DBTable.
 	 * A clazz deve ser da hierarquia de AbstractEntidade.
-	 * 
+	 *
 	 * @param clazz
 	 * @return
 	 */
@@ -83,10 +97,30 @@ public class AnnotationUtil {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Busca todos os campos de uma Entidade e retorna a relação de Coluna (columnName, value, type).
+	 * Não busca pelos campos da superClasse (AbstractEntidade)
+	 *
+	 * @param obj
+	 * @return
+	 */
 	static public List<Coluna> getColumnValues(AbstractEntidade obj){
+		return getColumnValues(obj, false);
+	}
+
+	/**
+	 * Busca todos os campos de uma Entidade e retorna a relação de Coluna (columnName, value, type).
+	 * Se superClazz == true busca pelos campos da superClasse (AbstractEntidade)
+	 *
+	 * @param obj
+	 * @param superClazz
+	 * @return
+	 */
+	static public List<Coluna> getColumnValues(AbstractEntidade obj, boolean superClazz){
+		//TODO: mudar tratamento exception
 		List<Coluna> colunas = new ArrayList<Coluna>();
-		Map<DBColumn,Field> columns = getDBColumns(obj.getClass(), false);
+		Map<DBColumn,Field> columns = getDBColumns(obj.getClass(), superClazz);
 		Coluna c = null;
 
 		for (DBColumn dbColumn : columns.keySet()) {
@@ -97,7 +131,10 @@ public class AnnotationUtil {
 				Field f = columns.get(dbColumn);
 				f.setAccessible(true);
 				if (ValidatorUtil.isNotEmpty(f.get(obj))) {
-					c.setValue(f.get(obj).toString());
+					Object value = f.get(obj);
+					if (ValidatorUtil.isNotEmpty(value)) {
+						c.setValue(value.toString());
+					}
 				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();

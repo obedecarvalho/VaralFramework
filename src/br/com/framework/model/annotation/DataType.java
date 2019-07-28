@@ -1,4 +1,4 @@
-package br.com.framework.model;
+package br.com.framework.model.annotation;
 
 public enum DataType {
 	INTEGER, REAL, TEXT, BLOB,
