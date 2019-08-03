@@ -6,6 +6,7 @@ public abstract class ConstanteLog {
 	public static final String LOG_DB_DELETE = "Delete: {sql: %s, id: %d, total: %d}";
 	public static final String LOG_DB_UPDATE = "Update: {sql: %s, id: %d, total: %d}";
 	public static final String LOG_DB_INSERT = "Insert: {sql: %s, id: %d, total: %d}";
+	public static final String LOG_DB_SELECT = "Select: {sql: %s, id: %d}";
 
 	//DB CONNECTION
 	public static final String LOG_CONNECTION_ERROR = "Não foi possível abrir a conexão: %s";

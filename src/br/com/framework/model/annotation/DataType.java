@@ -26,4 +26,8 @@ public enum DataType {
 	public boolean isText() {
 		return TEXT.equals(this);
 	}
+
+	public boolean isDate() {
+		return _DATE.equals(this);
+	}
 }

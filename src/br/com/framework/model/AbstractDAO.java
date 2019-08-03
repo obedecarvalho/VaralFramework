@@ -3,30 +3,34 @@ package br.com.framework.model;
 import static br.com.framework.util.ConstanteLog.LOG_DB_INSERT;
 import static br.com.framework.util.ConstanteLog.LOG_DB_DELETE;
 import static br.com.framework.util.ConstanteLog.LOG_DB_UPDATE;
+import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT;
 
-import java.lang.reflect.Field;
+import static br.com.framework.model.util.EntityHandle.getTableName;
+import static br.com.framework.model.util.EntityHandle.getTableColumnsName;
+import static br.com.framework.model.util.EntityHandle.getColumnsValue;
+
+import static br.com.framework.util.StringUtil.listToString;
+import static br.com.framework.util.StringUtil.stringMultiple;
+
+import static br.com.framework.model.util.DAOUtil.getConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import br.com.framework.model.annotation.Coluna;
-import br.com.framework.model.annotation.DBColumn;
-import br.com.framework.model.util.AnnotationUtil;
-import br.com.framework.model.util.DAOUtil;
+import br.com.framework.model.util.ColumnValue;
 import br.com.framework.util.LogUtil;
-import br.com.framework.util.StringUtil;
 import br.com.framework.util.ValidatorUtil;
 
 public abstract class AbstractDAO<T extends AbstractEntidade> {
-	//TODO: cache definicoes
 	//TODO: opção de busca relacoes fk
-	//TODO: classe para criar o arquivo de DB
+	//TODO: classe para criar o arquivo de DB (.db)
 
 	private static final String SQL_INSERT = "INSERT INTO %s (%s) VALUES (%s);";
 	private static final String SQL_UPDATE = "UPDATE %s SET %s WHERE ID = ?;";
@@ -51,32 +55,35 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		validate(obj, true);
 
 		//Dados da insercao
-		String tableName = AnnotationUtil.getDBTableName(obj.getClass());
-		List<Coluna> fields = AnnotationUtil.getColumnValues(obj);
-		String fieldsString = generateFieldsInsert(fields);
-		String fieldCard = StringUtil.stringMultiple(SQL_MASK_FIELD, fields.size(), SQL_SEPARATOR_FIELD);
+		String tableName = getTableName(obj.getClass());
+		List<String> columnsName = getTableColumnsName(obj.getClass());
+		String fieldsString = listToString(columnsName);
+		String fieldCard = stringMultiple(SQL_MASK_FIELD, columnsName.size(), SQL_SEPARATOR_FIELD);
+		List<ColumnValue> columnValues = getColumnsValue(obj);
+		String sql = String.format(SQL_INSERT, tableName, fieldsString, fieldCard);
 
 		try {
 			//Inserção
-			Connection conn = DAOUtil.getConnection();
-			PreparedStatement stmn = conn.prepareStatement(String.format(SQL_INSERT, tableName, fieldsString, fieldCard), Statement.RETURN_GENERATED_KEYS);
-			for (int i = 0; i< fields.size(); i++) {
-				setAttributeByType(stmn, fields.get(i), i+1);
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			for (int i = 0; i< columnValues.size(); i++) {
+				setAttributeByType(stmn, columnValues.get(i), i+1);//TODO: erro id esta ai
 			}
-			Integer rowInserted;
-			rowInserted = stmn.executeUpdate();
+			Integer rowsInserted = stmn.executeUpdate();
 
 			//Obtendo o ID inserido
+			//TODO: extract??
 			ResultSet rs = stmn.getGeneratedKeys();
 			if (rs.next()) {
 				Integer id = rs.getInt(1);
 				obj.setId(id);
 			}
-			rs.close();
-			stmn.close();
 
 			//Log do insert
-			LogUtil.info(String.format(LOG_DB_INSERT, String.format(SQL_INSERT, tableName, fieldsString, fieldCard), obj.getId(), rowInserted));
+			LogUtil.info(String.format(LOG_DB_INSERT, sql, obj.getId(), rowsInserted));
+
+			rs.close();
+			stmn.close();
 
 		} catch (SQLException e) {
 			throw new DAOException(e);
@@ -94,23 +101,26 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		validate(obj, false);
 
 		//Dados do Update
-		String tableName = AnnotationUtil.getDBTableName(obj.getClass());
-		List<Coluna> fields = AnnotationUtil.getColumnValues(obj);
-		String fieldsString = generateFieldsUpdate(fields);
+		String tableName = getTableName(obj.getClass());
+		List<String> columnsName = getTableColumnsName(obj.getClass());
+		String fieldsString = generateFieldsKeyValue(columnsName);
+		List<ColumnValue> columnValues = getColumnsValue(obj);
+		String sql = String.format(SQL_UPDATE, tableName, fieldsString);
 
 		try {
 			//Update
-			Connection conn = DAOUtil.getConnection();
-			PreparedStatement stmn = conn.prepareStatement(String.format(SQL_UPDATE, tableName, fieldsString));
-			for (int i = 0; i< fields.size(); i++) {
-				setAttributeByType(stmn, fields.get(i), i+1);
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql);
+			for (int i = 0; i< columnValues.size(); i++) {
+				setAttributeByType(stmn, columnValues.get(i), i+1);//TODO: erro id esta ai
 			}
-			stmn.setInt(fields.size(), obj.getId());
-			Integer rowUpdated = stmn.executeUpdate();
+			stmn.setInt(columnValues.size(), obj.getId());
+			Integer rowsUpdated = stmn.executeUpdate();
 
 			//Log do update
-			LogUtil.info(String.format(LOG_DB_UPDATE, String.format(SQL_UPDATE, tableName, fieldsString), obj.getId(), rowUpdated));
+			LogUtil.info(String.format(LOG_DB_UPDATE, sql, obj.getId(), rowsUpdated));
 
+			stmn.close();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}
@@ -127,18 +137,20 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		validate(obj, false);
 
 		//Dados
-		String tableName = AnnotationUtil.getDBTableName(obj.getClass());
+		String tableName = getTableName(obj.getClass());
+		String sql = String.format(SQL_DELETE, tableName);
 
 		try {
 			//Delete
-			Connection conn = DAOUtil.getConnection();
-			PreparedStatement stmn = conn.prepareStatement(String.format(SQL_DELETE, tableName));
-			stmn.setInt(0, obj.getId());
-			Integer rowDeleted = stmn.executeUpdate();
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql);
+			stmn.setInt(1, obj.getId());
+			Integer rowsDeleted = stmn.executeUpdate();
 
 			//Log do Delete
-			LogUtil.info(String.format(LOG_DB_DELETE, String.format(SQL_DELETE, tableName), obj.getId(), rowDeleted));
+			LogUtil.info(String.format(LOG_DB_DELETE, sql, obj.getId(), rowsDeleted));
 
+			stmn.close();
 		} catch (SQLException e) {
 			throw new DAOException(e);
 		}
@@ -168,22 +180,82 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		}
 	}
 
-	public T findById(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException, SQLException {
-		Connection conn = DAOUtil.getConnection();
-		String tableName = AnnotationUtil.getDBTableName(clazz);
+	public AbstractEntidade findById(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
+		if (ValidatorUtil.isEmpty(id)) {
+			return null;
+		}
 
-		Map<DBColumn,Field> fields = AnnotationUtil.getDBColumns(clazz);
-		String fieldsString = generateFieldsInsert(fields);
-		PreparedStatement stmn = conn.prepareStatement(String.format(SQL_SELECT_ID, fieldsString, tableName));
-		stmn.setInt(0, id);
-		// TODO : lembrar do ID
-		//continua
+		//Informações
+		String tableName = getTableName(clazz);
+		List<String> columnsName = getTableColumnsName(clazz);
+		String fieldsString = listToString(columnsName);
+		String sql = String.format(SQL_SELECT_ID, fieldsString, tableName);
+
+		try {
+			//Select
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql);
+			stmn.setInt(1, id);
+			stmn.setMaxRows(1);//?
+			ResultSet rs = stmn.executeQuery();
+
+			AbstractEntidade result = clazz.newInstance();
+
+			if (rs.next()) {
+
+			}
+
+			//continua
+			return result;
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 
-	public List<T> findAll(Class<? extends AbstractEntidade> clazz) {
+	public List<T> findByIds(List<Integer> ids, Class<? extends AbstractEntidade> clazz) throws DAOException {
 		//TODO
 		return null;
+	}
+
+	public List<? extends AbstractEntidade> findAll(Class<? extends AbstractEntidade> clazz) throws DAOException {
+
+		// Informações
+		String tableName = getTableName(clazz);
+		List<String> columnsName = getTableColumnsName(clazz);
+		String fieldsString = listToString(columnsName);
+		String sql = String.format(SQL_SELECT_ALL, fieldsString, tableName);
+
+		List<AbstractEntidade> results = new ArrayList<AbstractEntidade>();
+
+		try {
+			//Select
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql);
+			ResultSet rs = stmn.executeQuery();
+			AbstractEntidade result;
+
+			while (rs.next()) {
+				result = clazz.newInstance();
+				// continua
+				results.add(result);
+			}
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return results;
 	}
 
 	//=========================================
@@ -191,51 +263,23 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	//=========================================
 
 	/**
-	 * Gera String com a combinação 'campo = valor' para todas as colunas da tabela que será updated.
+	 * Gera String com a combinação 'campo = ?' para todas as colunas da tabela, separados por SQL_SEPARATOR_FIELD.
 	 * 
 	 * @param columns
 	 * @return
 	 */
-	private String generateFieldsUpdate(List<Coluna> columns) {
+	private String generateFieldsKeyValue(List<String> columns) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < columns.size(); i++) {
 			if (i > 0) {
 				sb.append(SQL_SEPARATOR_FIELD);
 			}
-			Coluna c = columns.get(i);
-			sb.append(String.format(SQL_FIELD, c.getColumnName()));
+			sb.append(String.format(SQL_FIELD, columns.get(i)));
 		}
 		return sb.toString();
 	}
 
-	private String generateFieldsInsert(Map<DBColumn,Field> columns) {
-		StringBuilder sb = new StringBuilder();
-		Collection<DBColumn> colunas = columns.keySet();
-		for (DBColumn col : colunas) {
-			sb.append(SQL_SEPARATOR_FIELD);
-			sb.append(col.columnName());
-		}
-		return sb.toString().toString().substring(1);
-	}
-
-	/**
-	 * Gera String com a lista de colunas (separado por vírculas) da tabela onde será feita a inserção. 
-	 * @param columns
-	 * @return
-	 */
-	private String generateFieldsInsert(List<Coluna> columns) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < columns.size(); i++) {
-			if (i > 0) {
-				sb.append(SQL_SEPARATOR_FIELD);
-			}
-			Coluna c = columns.get(i);
-			sb.append(c.getColumnName());
-		}
-		return sb.toString();
-	}
-
-	private void setAttributeByType(PreparedStatement stmn, Coluna column, int pos) throws DAOException {
+	private void setAttributeByType(PreparedStatement stmn, ColumnValue column, int pos) throws DAOException {
 		//TODO: validar not null??
 		try {
 			if (ValidatorUtil.isEmpty(column.getValue())) {
