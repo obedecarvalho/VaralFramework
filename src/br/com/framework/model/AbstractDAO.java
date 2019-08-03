@@ -56,10 +56,10 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 
 		//Dados da insercao
 		String tableName = getTableName(obj.getClass());
-		List<String> columnsName = getTableColumnsName(obj.getClass());
+		List<String> columnsName = getTableColumnsName(obj.getClass(), false);
 		String fieldsString = listToString(columnsName);
 		String fieldCard = stringMultiple(SQL_MASK_FIELD, columnsName.size(), SQL_SEPARATOR_FIELD);
-		List<ColumnValue> columnValues = getColumnsValue(obj);
+		List<ColumnValue> columnValues = getColumnsValue(obj, false);
 		String sql = String.format(SQL_INSERT, tableName, fieldsString, fieldCard);
 
 		try {
@@ -67,7 +67,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			Connection conn = getConnection();
 			PreparedStatement stmn = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i< columnValues.size(); i++) {
-				setAttributeByType(stmn, columnValues.get(i), i+1);//TODO: erro id esta ai
+				setAttributeByType(stmn, columnValues.get(i), i+1);
 			}
 			Integer rowsInserted = stmn.executeUpdate();
 
@@ -102,9 +102,9 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 
 		//Dados do Update
 		String tableName = getTableName(obj.getClass());
-		List<String> columnsName = getTableColumnsName(obj.getClass());
+		List<String> columnsName = getTableColumnsName(obj.getClass(), false);
 		String fieldsString = generateFieldsKeyValue(columnsName);
-		List<ColumnValue> columnValues = getColumnsValue(obj);
+		List<ColumnValue> columnValues = getColumnsValue(obj, false);
 		String sql = String.format(SQL_UPDATE, tableName, fieldsString);
 
 		try {
@@ -112,9 +112,9 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			Connection conn = getConnection();
 			PreparedStatement stmn = conn.prepareStatement(sql);
 			for (int i = 0; i< columnValues.size(); i++) {
-				setAttributeByType(stmn, columnValues.get(i), i+1);//TODO: erro id esta ai
+				setAttributeByType(stmn, columnValues.get(i), i+1);
 			}
-			stmn.setInt(columnValues.size(), obj.getId());
+			stmn.setInt(columnValues.size() + 1, obj.getId());
 			Integer rowsUpdated = stmn.executeUpdate();
 
 			//Log do update

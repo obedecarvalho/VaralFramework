@@ -1,5 +1,7 @@
 package br.com.framework.model.util;
 
+import static br.com.framework.model.util.DBAnnotationUtil.getEntityRepresentation;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +22,27 @@ public abstract class EntityHandle {
 	 * @return
 	 */
 	public static List<ColumnValue> getColumnsValue(AbstractEntidade obj) {
-		EntityRepresentation repr = DBAnnotationUtil.getEntityRepresentation(obj.getClass(), true);
+		return getColumnsValue(obj, true);
+	}
+
+	/**
+	 * Retorna uma mapeamento de valores associados a instancia de <i>obj</i> e as definições da tabela.
+	 * Pode-se escolher não trazer a primary key.
+	 * @param obj
+	 * @param primaryKey
+	 * @return
+	 */
+	public static List<ColumnValue> getColumnsValue(AbstractEntidade obj, boolean primaryKey) {
+		EntityRepresentation repr = getEntityRepresentation(obj.getClass());
 		List<ColumnValue> columnValues = new ArrayList<ColumnValue>();
 		Object value;
+		Field f;
 		for (ColumnRepresentation c : repr.getColumns()) {
+			if (!primaryKey && c.isPrimaryKey()) {
+				continue;
+			}
 			try {
-				Field f = c.getField();
+				f = c.getField();
 				f.setAccessible(true);
 				value = f.get(obj);
 				if (ValidatorUtil.isNotEmpty(value)) {
@@ -47,7 +64,7 @@ public abstract class EntityHandle {
 	 * @return
 	 */
 	public static String getTableName(Class<? extends AbstractEntidade> clazz) {
-		EntityRepresentation repr = DBAnnotationUtil.getEntityRepresentation(clazz, true);
+		EntityRepresentation repr = getEntityRepresentation(clazz);
 		//TODO: null exception
 		return repr.getDbTable().tableName();
 	}
@@ -58,7 +75,7 @@ public abstract class EntityHandle {
 	 * @return
 	 */
 	public static List<ColumnRepresentation> getTableColumns(Class<? extends AbstractEntidade> clazz) {
-		EntityRepresentation repr = DBAnnotationUtil.getEntityRepresentation(clazz, true);
+		EntityRepresentation repr = getEntityRepresentation(clazz);
 		//TODO: null exception
 		return repr.getColumns();
 	}
@@ -69,9 +86,19 @@ public abstract class EntityHandle {
 	 * @return
 	 */
 	public static List<String> getTableColumnsName(Class<? extends AbstractEntidade> clazz) {
-		EntityRepresentation repr = DBAnnotationUtil.getEntityRepresentation(clazz, true);
+		return getTableColumnsName(clazz, true);
+	}
+
+	/**
+	 * Lista com nomes das colunas de uma Entidade. Pode-se escolher não trazer a primary key.
+	 * @param clazz
+	 * @param primaryKey
+	 * @return
+	 */
+	public static List<String> getTableColumnsName(Class<? extends AbstractEntidade> clazz, boolean primaryKey) {
+		EntityRepresentation repr = getEntityRepresentation(clazz);
 		//TODO: null exception
-		return repr.getColumnsName();
+		return repr.getColumnsName(primaryKey);
 	}
 
 }

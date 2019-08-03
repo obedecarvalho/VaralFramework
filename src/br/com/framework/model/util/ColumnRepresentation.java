@@ -13,12 +13,12 @@ import br.com.framework.model.annotation.DataType;
 public class ColumnRepresentation {
 
 	/**
-	 * Annotation do atributo da entidade..
+	 * Annotation do atributo da entidade.
 	 */
 	private DBColumn dbColumn;
 
 	/**
-	 * Field do atributo da entidade..
+	 * Field do atributo da entidade.
 	 */
 	private Field field;
 
@@ -28,6 +28,10 @@ public class ColumnRepresentation {
 
 	public DataType getColumnType() {
 		return dbColumn.dataType();
+	}
+
+	public boolean isPrimaryKey() {
+		return dbColumn.primaryKey();
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import br.com.framework.model.annotation.DataType;
 
 public abstract class AbstractEntidade {
 
-	@DBColumn(columnName="id", dataType=DataType.INTEGER)
+	@DBColumn(columnName="id", dataType=DataType.INTEGER, primaryKey = true)
 	private int id;
 
 	public int getId() {

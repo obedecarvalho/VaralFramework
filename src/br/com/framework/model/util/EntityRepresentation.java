@@ -33,8 +33,20 @@ public class EntityRepresentation {
 	 * @return
 	 */
 	public List<String> getColumnsName() {
+		return getColumnsName(true);
+	}
+
+	/**
+	 * Lista de nomes das colunas da entidade. Pode-se escolher não trazer a primary key.
+	 * @param primaryKey
+	 * @return
+	 */
+	public List<String> getColumnsName(boolean primaryKey) {
 		List<String> names = new ArrayList<String>();
 		for (ColumnRepresentation cr : getColumns()) {
+			if (!primaryKey && cr.isPrimaryKey()) {
+				continue;
+			}
 			names.add(cr.getColumnName());
 		}
 		return names;

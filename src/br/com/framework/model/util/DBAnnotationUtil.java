@@ -25,13 +25,11 @@ public abstract class DBAnnotationUtil {
 
 	/**
 	 * Retorna o mapeamento de DBColumn declarada em uma entidade e o Field correspondente.
-	 * Se superClazz == true busca por campos da super classe (AbstractEntidade).
 	 *
 	 * @param clazz
-	 * @param superClazz
 	 * @return
 	 */
-	static public EntityRepresentation getEntityRepresentation(Class<? extends AbstractEntidade> clazz, boolean superClazz) {
+	static public EntityRepresentation getEntityRepresentation(Class<? extends AbstractEntidade> clazz) {
 		if (ValidatorUtil.isEmpty(clazz)) {
 			return null;
 		}
@@ -51,15 +49,13 @@ public abstract class DBAnnotationUtil {
 		Field[] fields = null;
 
 		// Buscar campos da Super Classe
-		if (superClazz) {
-			fields = AbstractEntidade.class.getDeclaredFields();
-			
-			for (Field f : fields) {
-				//se for column declarada
-				if (f.isAnnotationPresent(DBColumn.class)) {
-					DBColumn dbColumn = f.getAnnotation(DBColumn.class);
-					dbColumns.add(new ColumnRepresentation(dbColumn, f));	
-				}
+		fields = AbstractEntidade.class.getDeclaredFields();
+
+		for (Field f : fields) {
+			//se for column declarada
+			if (f.isAnnotationPresent(DBColumn.class)) {
+				DBColumn dbColumn = f.getAnnotation(DBColumn.class);
+				dbColumns.add(new ColumnRepresentation(dbColumn, f));	
 			}
 		}
 
