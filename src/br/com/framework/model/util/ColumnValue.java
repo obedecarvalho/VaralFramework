@@ -106,4 +106,9 @@ public class ColumnValue {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		return "ColumnValue [columnRepresentation=" + columnRepresentation + ", value=" + value + "]";
+	}
+
 }

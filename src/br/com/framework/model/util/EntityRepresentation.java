@@ -52,10 +52,6 @@ public class EntityRepresentation {
 		return names;
 	}
 
-	//################################################################
-	//############ Construtor e get/set default ######################
-	//################################################################
-
 	public List<ColumnRepresentation> getColumns() {
 		return columns;
 	}
@@ -78,6 +74,11 @@ public class EntityRepresentation {
 
 	public void setDbTable(DBTable dbTable) {
 		this.dbTable = dbTable;
+	}
+
+	@Override
+	public String toString() {
+		return "EntityRepresentation [dbTable=" + dbTable.tableName() + ", columns=" + columns + "]";
 	}
 
 }

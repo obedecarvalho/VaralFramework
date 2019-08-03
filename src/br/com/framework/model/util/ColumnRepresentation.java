@@ -53,9 +53,10 @@ public class ColumnRepresentation {
 		return true;
 	}
 
-	//################################################################
-	//############ Construtor e get/set default ######################
-	//################################################################
+	@Override
+	public String toString() {
+		return "ColumnRepresentation [dbColumn=" + getDbColumn().columnName() + " ("  + getDbColumn().dataType()+ ")" + ", field=" + field + "]";
+	}
 
 	public ColumnRepresentation(DBColumn dbColumn, Field field) {
 		setDbColumn(dbColumn);
