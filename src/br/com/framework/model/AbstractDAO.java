@@ -4,10 +4,13 @@ import static br.com.framework.util.ConstanteLog.LOG_DB_INSERT;
 import static br.com.framework.util.ConstanteLog.LOG_DB_DELETE;
 import static br.com.framework.util.ConstanteLog.LOG_DB_UPDATE;
 import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT;
+import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT_ALL;
 
 import static br.com.framework.model.util.EntityHandle.getTableName;
 import static br.com.framework.model.util.EntityHandle.getTableColumnsName;
+import static br.com.framework.model.util.EntityHandle.getTableColumns;
 import static br.com.framework.model.util.EntityHandle.getColumnsValue;
+import static br.com.framework.model.util.EntityHandle.getEntityInstance;
 
 import static br.com.framework.util.StringUtil.listToString;
 import static br.com.framework.util.StringUtil.stringMultiple;
@@ -24,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import br.com.framework.model.util.ColumnHandle;
+import br.com.framework.model.util.ColumnRepresentation;
 import br.com.framework.model.util.ColumnValue;
 import br.com.framework.util.LogUtil;
 import br.com.framework.util.ValidatorUtil;
@@ -35,8 +40,8 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	private static final String SQL_INSERT = "INSERT INTO %s (%s) VALUES (%s);";
 	private static final String SQL_UPDATE = "UPDATE %s SET %s WHERE ID = ?;";
 	private static final String SQL_DELETE = "DELETE FROM %s WHERE ID = ?;";
-	private static final String SQL_SELECT_ALL = "SELECT %d FROM %s;";
-	private static final String SQL_SELECT_ID = "SELECT %d FROM %s WHERE ID = ?;";
+	private static final String SQL_SELECT_ALL = "SELECT %s FROM %s;";
+	private static final String SQL_SELECT_ID = "SELECT %s FROM %s WHERE ID = ?;";
 
 	//private static final String SQL_LAST_ROWID = "SELECT last_insert_rowid() AS row_id;";
 
@@ -180,7 +185,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		}
 	}
 
-	public AbstractEntidade findById(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
+	public <E extends AbstractEntidade> E findById(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
 		if (ValidatorUtil.isEmpty(id)) {
 			return null;
 		}
@@ -196,35 +201,32 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			Connection conn = getConnection();
 			PreparedStatement stmn = conn.prepareStatement(sql);
 			stmn.setInt(1, id);
-			stmn.setMaxRows(1);//?
+			stmn.setMaxRows(1);
 			ResultSet rs = stmn.executeQuery();
 
-			AbstractEntidade result = clazz.newInstance();
-
+			//Preenchendo Entidade 
+			E result = getEntityInstance(clazz);
 			if (rs.next()) {
-
+				transforResultSetToEntity(rs, result);
 			}
 
-			//continua
+			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));
+
+			rs.close();
+			stmn.close();
+
 			return result;
 		} catch (SQLException e) {
 			throw new DAOException(e);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
 	}
 
-	public List<T> findByIds(List<Integer> ids, Class<? extends AbstractEntidade> clazz) throws DAOException {
+	public <E extends AbstractEntidade> List<E> findByIds(List<Integer> ids, Class<? extends AbstractEntidade> clazz) throws DAOException {
 		//TODO
 		return null;
 	}
 
-	public List<? extends AbstractEntidade> findAll(Class<? extends AbstractEntidade> clazz) throws DAOException {
+	public <E extends AbstractEntidade> List<E> findAll(Class<? extends AbstractEntidade> clazz) throws DAOException {
 
 		// Informações
 		String tableName = getTableName(clazz);
@@ -232,35 +234,81 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		String fieldsString = listToString(columnsName);
 		String sql = String.format(SQL_SELECT_ALL, fieldsString, tableName);
 
-		List<AbstractEntidade> results = new ArrayList<AbstractEntidade>();
+		List<E> results = new ArrayList<E>();
 
 		try {
 			//Select
 			Connection conn = getConnection();
 			PreparedStatement stmn = conn.prepareStatement(sql);
 			ResultSet rs = stmn.executeQuery();
-			AbstractEntidade result;
+			E result;
 
 			while (rs.next()) {
-				result = clazz.newInstance();
-				// continua
+				result = getEntityInstance(clazz);
+				transforResultSetToEntity(rs, result);
 				results.add(result);
 			}
+
+			LogUtil.info(String.format(LOG_DB_SELECT_ALL, sql));
+
+			rs.close();
+			stmn.close();
 		} catch (SQLException e) {
 			throw new DAOException(e);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return results;
+	}
+
+	public void updateField(Class<? extends AbstractEntidade> clazz, int id, String field, String value) {
+		//TODO: update unico campo
+	}
+
+	public void insertRecursive(T obj) {
+		//TODO
+	}
+
+	public void updateRecursive(T obj) {
+		//TODO
+	}
+
+	public void deleteRecursive(T obj) {
+		//TODO
+	}
+
+	public void findByIdRecursive(Integer id, Class<? extends AbstractEntidade> clazz) {
+		//TODO
+	}
+
+	public void findAllRecursive(Class<? extends AbstractEntidade> clazz) {
+		//TODO
+	}
+
+	public void inactivate(T obj) {
+		//TODO
 	}
 
 	//=========================================
 	//======== Métodos Auxiliares =============
 	//=========================================
+
+	/**
+	 * Irá percorre o ResultSet e recuperar os campos e salvar na Entidade.
+	 * @param rs
+	 * @param obj
+	 * @throws DAOException 
+	 */
+	private void transforResultSetToEntity(ResultSet rs, AbstractEntidade obj) throws DAOException {
+		List<ColumnRepresentation> columnRepresentations = getTableColumns(obj.getClass());
+		for (ColumnRepresentation cr : columnRepresentations) {
+			String columnName = cr.getColumnName();
+			try {
+				String value = rs.getString(columnName);
+				ColumnHandle.setEntityValue(obj, cr, value);
+			} catch (SQLException e) {
+				throw new DAOException(e);
+			}
+		}
+	}
 
 	/**
 	 * Gera String com a combinação 'campo = ?' para todas as colunas da tabela, separados por SQL_SEPARATOR_FIELD.
@@ -279,8 +327,14 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		return sb.toString();
 	}
 
+	/**
+	 * Seta em <i>stmn<i> o valor e tipo de atributos que devem ser passados ao Statement. 
+	 * @param stmn
+	 * @param column
+	 * @param pos
+	 * @throws DAOException
+	 */
 	private void setAttributeByType(PreparedStatement stmn, ColumnValue column, int pos) throws DAOException {
-		//TODO: validar not null??
 		try {
 			if (ValidatorUtil.isEmpty(column.getValue())) {
 				stmn.setNull(pos, Types.NULL);
@@ -289,9 +343,13 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			} else if (column.getType().isReal()) {
 				stmn.setDouble(pos, column.getValueReal());
 			} else if (column.getType().isText()) {
-				stmn.setString(pos, column.getValueText());
+				stmn.setString(pos, column.getValue());
 			} else if (column.getType().isBlob()) {
-				// TODO stmn.setBlob(pos, column.getValueBlob());
+				stmn.setBlob(pos, column.getValueBlob());
+			} else if (column.getType().isNDateTime()) {
+				stmn.setInt(pos, column.getValueUnixEpoch());
+			} else if (column.getType().isNBoolean()) {
+				stmn.setInt(pos, column.getValueBooleanInteger());
 			}
 		} catch (SQLException e) {
 			throw new DAOException(e);

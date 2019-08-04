@@ -101,4 +101,13 @@ public abstract class EntityHandle {
 		return repr.getColumnsName(primaryKey);
 	}
 
+	public static <E extends AbstractEntidade> E getEntityInstance(Class<? extends AbstractEntidade> clazz) {
+		try {
+			return (E) clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

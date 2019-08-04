@@ -1,5 +1,6 @@
 package br.com.framework.model.util;
 
+import java.sql.Blob;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -47,68 +48,58 @@ public class ColumnValue {
 		return getColumnRepresentation().getColumnType();
 	}
 
+	@Override
+	public String toString() {
+		return "ColumnValue [columnRepresentation=" + columnRepresentation + ", value=" + value + "]";
+	}
+
 	//TODO: melhorar retorno de value por tipo
 	public Integer getValueInteger() {
 		if (getType().isInteger() && ValidatorUtil.isNotEmpty(getValue())) {
-			try {
-				return Integer.parseInt(getValue());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+			return DataTypeUtil.getValueInteger(getValue());
 		}
 		return null;
 	}
 	
 	public Double getValueReal() {
 		if (getType().isReal() && ValidatorUtil.isNotEmpty(getValue())) {
-			try {
-				return Double.parseDouble(getValue());
-			} catch (NumberFormatException e) {
-				return null;
-			}
+			return DataTypeUtil.getValueReal(getValue());
 		}
 		return null;
 	}
 	
-	public String getValueText() {
-		if (getType().isText() && ValidatorUtil.isNotEmpty(getValue())) {
-			return getValue();
-		}	
-		return null;
-	}
-	
-	public String getValueBlob() {
-		// TODO : http://www.sqlitetutorial.net/sqlite-java/jdbc-read-write-blob/
+	public Blob getValueBlob() {
+		if (getType().isBlob() && ValidatorUtil.isNotEmpty(getValue())) {
+			return DataTypeUtil.getValueBlob(getValue());
+		}
 		return null;
 	}
 	
 	public Date getValueDate() {
-		//TODO: db datetime
-		//strftime('%s','now')
-		if (getType().isText() && ValidatorUtil.isNotEmpty(getValue())) {
-			try {
-				Integer unixepoch = Integer.parseInt(getValue());
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTimeInMillis(unixepoch);
-				return calendar.getTime();
-			} catch (NumberFormatException e) {
-				return null;
-			}
+		if (getType().isNDateTime() && ValidatorUtil.isNotEmpty(getValue())) {
+			return DataTypeUtil.getValueDate(getValue());
 		}
 		return null;
 	}
 	
-	public Integer getUnixEpoch() {
-		if (getType().isText() && ValidatorUtil.isNotEmpty(getValue())) {
-			//TODO
-			return null;
+	public Integer getValueUnixEpoch() {
+		if (getType().isNDateTime() && ValidatorUtil.isNotEmpty(getValue())) {
+			return DataTypeUtil.getValueUnixEpoch(getValue());
 		}
 		return null;
 	}
 
-	@Override
-	public String toString() {
-		return "ColumnValue [columnRepresentation=" + columnRepresentation + ", value=" + value + "]";
+	public Boolean getValueBoolean() {
+		if (getType().isNBoolean() && ValidatorUtil.isNotEmpty(getValue())) {
+			return DataTypeUtil.getValueBoolean(getValue());
+		}
+		return null;
 	}
 
+	public Integer getValueBooleanInteger() {
+		if (getType().isNBoolean() && ValidatorUtil.isNotEmpty(getValue())) {
+			return DataTypeUtil.getValueBooleanInteger(getValue());
+		}
+		return null;
+	}
 }

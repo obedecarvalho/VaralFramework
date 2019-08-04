@@ -5,11 +5,15 @@ public enum DataType {
 	/**
 	 * Emulação de nulo
 	 */
-	_NULL,
+	NNULL,
+	/**
+	 * Emulação de boolean, variacao de INTEGER (0/1).
+	 */
+	NBOOLEAN,
 	/**
 	 * Type não oficial, variação de INTEGER (unixepcok)
 	 */
-	_DATE;
+	NDATETIME;
 	
 	public boolean isInteger() {
 		return INTEGER.equals(this);
@@ -27,7 +31,11 @@ public enum DataType {
 		return TEXT.equals(this);
 	}
 
-	public boolean isDate() {
-		return _DATE.equals(this);
+	public boolean isNDateTime() {
+		return NDATETIME.equals(this);
+	}
+
+	public boolean isNBoolean() {
+		return NBOOLEAN.equals(this);
 	}
 }
