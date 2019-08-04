@@ -4,6 +4,7 @@ import static br.com.framework.model.util.DBAnnotationUtil.getEntityRepresentati
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.framework.model.AbstractEntidade;
@@ -46,7 +47,12 @@ public abstract class EntityHandle {
 				f.setAccessible(true);
 				value = f.get(obj);
 				if (ValidatorUtil.isNotEmpty(value)) {
-					columnValues.add(new ColumnValue(c, value.toString()));
+					if (c.getColumnType().isNDateTime()) {
+						Date date = (Date) value;
+						columnValues.add(new ColumnValue(c, DataTypeUtil.getValueUnixEpoch(date).toString()));
+					} else {
+						columnValues.add(new ColumnValue(c, value.toString()));
+					}
 				} else {
 					columnValues.add(new ColumnValue(c, null));//TODO: ??
 				}

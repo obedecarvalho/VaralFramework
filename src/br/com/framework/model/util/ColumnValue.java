@@ -82,8 +82,9 @@ public class ColumnValue {
 		return null;
 	}
 	
-	public Integer getValueUnixEpoch() {
+	public Long getValueUnixEpoch() {
 		if (getType().isNDateTime() && ValidatorUtil.isNotEmpty(getValue())) {
+			//return DataTypeUtil.getValueUnixEpoch(getValue());
 			return DataTypeUtil.getValueUnixEpoch(getValue());
 		}
 		return null;

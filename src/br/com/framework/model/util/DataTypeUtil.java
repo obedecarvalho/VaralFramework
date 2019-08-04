@@ -35,7 +35,7 @@ public class DataTypeUtil {
 	 */
 	public static Date getValueDate(String value) {
 		try {
-			Integer unixepoch = Integer.parseInt(value);
+			Long unixepoch = Long.parseLong(value) * 1000;
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(unixepoch);
 			return calendar.getTime();
@@ -44,19 +44,31 @@ public class DataTypeUtil {
 		}
 	}
 	
-	public static Integer getValueUnixEpoch(String value) {
-		// TODO: db datetime
-		// strftime('%s','now')
-		//TODO
-		return null;
+	public static Long getValueUnixEpoch(Date date) {
+		return (Long) date.getTime()/1000;
+	}
+
+	public static Long getValueUnixEpoch(String value) {
+		try {
+			return Long.parseLong(value);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 	
 	public static Boolean getValueBoolean(String value) {
-		return Boolean.getBoolean(value);
+		Integer newValue = getValueInteger(value);
+		if (newValue == 1) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
 
 	public static Integer getValueBooleanInteger(String value) {
-		//TODO
-		return null;
+		Boolean newValue = Boolean.parseBoolean(value);
+		if (newValue) {
+			return 1;
+		}
+		return 0;
 	}
 }

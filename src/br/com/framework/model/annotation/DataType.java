@@ -5,7 +5,7 @@ public enum DataType {
 	/**
 	 * Emulação de nulo
 	 */
-	NNULL,
+	//NNULL,
 	/**
 	 * Emulação de boolean, variacao de INTEGER (0/1).
 	 */

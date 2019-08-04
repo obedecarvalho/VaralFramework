@@ -358,7 +358,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			} else if (column.getType().isBlob()) {
 				stmn.setBlob(pos, column.getValueBlob());
 			} else if (column.getType().isNDateTime()) {
-				stmn.setInt(pos, column.getValueUnixEpoch());
+				stmn.setLong(pos, column.getValueUnixEpoch());
 			} else if (column.getType().isNBoolean()) {
 				stmn.setInt(pos, column.getValueBooleanInteger());
 			}
