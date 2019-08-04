@@ -101,6 +101,11 @@ public abstract class EntityHandle {
 		return repr.getColumnsName(primaryKey);
 	}
 
+	/**
+	 * Instância uma clazz.
+	 * @param clazz
+	 * @return
+	 */
 	public static <E extends AbstractEntidade> E getEntityInstance(Class<? extends AbstractEntidade> clazz) {
 		try {
 			return (E) clazz.newInstance();
@@ -109,5 +114,31 @@ public abstract class EntityHandle {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static List<ColumnRepresentation> getColumnsRelationOneTo(Class<? extends AbstractEntidade> clazz) {
+		EntityRepresentation repr = getEntityRepresentation(clazz);
+		//TODO: null exception
+		return repr.getColumnsRelationOneTo();
+	}
+
+	public static List<ColumnValueRelationOneTo> getColumnsRelationOneToValues(AbstractEntidade obj) {
+		List<ColumnRepresentation> columnRelations = getColumnsRelationOneTo(obj.getClass());
+		List<ColumnValueRelationOneTo> columnsRelationsValue = new ArrayList<ColumnValueRelationOneTo>();
+		Field f;
+		for (ColumnRepresentation cr : columnRelations) {
+			try {
+				f = cr.getField();
+				f.setAccessible(true);
+				AbstractEntidade entity = (AbstractEntidade) f.get(obj);
+				if (ValidatorUtil.isNotEmpty(entity)) {
+					columnsRelationsValue.add(new ColumnValueRelationOneTo(cr, entity.getId()));
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return columnsRelationsValue;
 	}
 }

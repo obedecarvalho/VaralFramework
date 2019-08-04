@@ -52,6 +52,17 @@ public class EntityRepresentation {
 		return names;
 	}
 
+	public List<ColumnRepresentation> getColumnsRelationOneTo() {
+		//TODO: usar filter apache commons util ou google guava
+		List<ColumnRepresentation> columns = new ArrayList<ColumnRepresentation>();
+		for (ColumnRepresentation cr : getColumns()) {
+			if (cr.isRelationOneTo()) {
+				columns.add(cr);
+			}
+		}
+		return columns;
+	}
+
 	public List<ColumnRepresentation> getColumns() {
 		return columns;
 	}

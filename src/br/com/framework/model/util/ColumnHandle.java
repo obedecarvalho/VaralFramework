@@ -74,4 +74,16 @@ public abstract class ColumnHandle {
 		}
 	}
 
+	public static void setEntityRelationOneTo(AbstractEntidade obj, ColumnRepresentation columnRepresentation, AbstractEntidade relationEntity){
+		if (ValidatorUtil.isNotEmpty(relationEntity) && ValidatorUtil.isNotEmpty(obj)) {
+			try {
+				Field f = columnRepresentation.getField();
+				f.setAccessible(true);
+				f.set(obj, relationEntity);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }

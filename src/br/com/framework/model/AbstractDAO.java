@@ -11,6 +11,7 @@ import static br.com.framework.model.util.EntityHandle.getTableColumnsName;
 import static br.com.framework.model.util.EntityHandle.getTableColumns;
 import static br.com.framework.model.util.EntityHandle.getColumnsValue;
 import static br.com.framework.model.util.EntityHandle.getEntityInstance;
+import static br.com.framework.model.util.EntityHandle.getColumnsRelationOneToValues;
 
 import static br.com.framework.util.StringUtil.listToString;
 import static br.com.framework.util.StringUtil.stringMultiple;
@@ -30,6 +31,7 @@ import java.util.List;
 import br.com.framework.model.util.ColumnHandle;
 import br.com.framework.model.util.ColumnRepresentation;
 import br.com.framework.model.util.ColumnValue;
+import br.com.framework.model.util.ColumnValueRelationOneTo;
 import br.com.framework.util.LogUtil;
 import br.com.framework.util.ValidatorUtil;
 
@@ -185,6 +187,10 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	}
 
 	public <E extends AbstractEntidade> E findById(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
+		return findById(id, clazz, false);
+	}
+
+	public <E extends AbstractEntidade> E findById(Integer id, Class<? extends AbstractEntidade> clazz, boolean recursive) throws DAOException {
 		if (ValidatorUtil.isEmpty(id)) {
 			return null;
 		}
@@ -209,7 +215,12 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 				transforResultSetToEntity(rs, result);
 			}
 			//Log do select
-			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));
+			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));//TODO: null exception
+
+			//Recursivo
+			if (recursive) {
+				recursiveSearch(result);
+			}
 
 			rs.close();
 			stmn.close();
@@ -264,58 +275,6 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		//TODO: update unico campo
 	}
 
-	public void insertRecursive(T obj) {
-		//TODO
-	}
-
-	public void updateRecursive(T obj) {
-		//TODO
-	}
-
-	public void deleteRecursive(T obj) {
-		//TODO
-	}
-
-	public <E extends AbstractEntidade> E findByIdRecursive(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
-		if (ValidatorUtil.isEmpty(id)) {
-			return null;
-		}
-
-		//Informações
-		String tableName = getTableName(clazz);
-		List<String> columnsName = getTableColumnsName(clazz);
-		String fieldsString = listToString(columnsName);
-		String sql = String.format(SQL_SELECT_ID, fieldsString, tableName);
-
-		try {
-			//Select
-			Connection conn = getConnection();
-			PreparedStatement stmn = conn.prepareStatement(sql);
-			stmn.setInt(1, id);
-			stmn.setMaxRows(1);
-			ResultSet rs = stmn.executeQuery();
-
-			//Preenchendo Entidade 
-			E result = getEntityInstance(clazz);
-			if (rs.next()) {
-				transforResultSetToEntity(rs, result);
-			}
-			//Log do select
-			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));
-
-			rs.close();
-			stmn.close();
-
-			return result;
-		} catch (SQLException e) {
-			throw new DAOException(e);
-		}
-	}
-
-	public void findAllRecursive(Class<? extends AbstractEntidade> clazz) {
-		//TODO
-	}
-
 	public void inactivate(T obj) {
 		//TODO para AbstractEntidadeAuditavel
 	}
@@ -323,6 +282,14 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	//=========================================
 	//======== Métodos Auxiliares =============
 	//=========================================
+
+	private void recursiveSearch(AbstractEntidade obj) throws DAOException {
+		List<ColumnValueRelationOneTo> columnsValue = getColumnsRelationOneToValues(obj);
+		for (ColumnValueRelationOneTo cv : columnsValue) {
+			AbstractEntidade ent = findById(cv.getId(), cv.getClassForRelationOneTo(), true);
+			ColumnHandle.setEntityRelationOneTo(obj, cv.getColumnRepresentation(), ent);
+		}
+	}
 
 	/**
 	 * Irá percorre o ResultSet e recuperar os campos e salvar na Entidade.
