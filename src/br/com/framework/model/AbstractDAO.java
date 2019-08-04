@@ -237,6 +237,10 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	}
 
 	public <E extends AbstractEntidade> List<E> findAll(Class<? extends AbstractEntidade> clazz) throws DAOException {
+		return findAll(clazz, false);
+	}
+
+	public <E extends AbstractEntidade> List<E> findAll(Class<? extends AbstractEntidade> clazz, boolean recursive) throws DAOException {
 
 		// Informações
 		String tableName = getTableName(clazz);
@@ -262,6 +266,13 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 
 			//Log do select
 			LogUtil.info(String.format(LOG_DB_SELECT_ALL, sql));
+
+			//Recursive
+			if (recursive) {
+				for (E res : results) {
+					recursiveSearch(res);
+				}
+			}
 
 			rs.close();
 			stmn.close();
