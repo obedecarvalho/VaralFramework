@@ -34,6 +34,10 @@ public class ColumnRepresentation {
 		return dbColumn.primaryKey();
 	}
 
+	public boolean isRelationOneTo() {
+		return dbColumn.relationOneTo();
+	}
+
 	@Override
 	public int hashCode() {
 		return getDbColumn().columnName().hashCode();//TODO: column name deve ser unica por tabela

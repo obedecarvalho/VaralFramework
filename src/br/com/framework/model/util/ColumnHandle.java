@@ -8,11 +8,19 @@ import br.com.framework.util.ValidatorUtil;
 
 public abstract class ColumnHandle {
 
+	/**
+	 * Seta <i>value</i> em <i>obj</i> de acordo com <i>columnRepresentation</i>
+	 * @param obj
+	 * @param columnRepresentation
+	 * @param value
+	 */
 	public static void setEntityValue(AbstractEntidade obj, ColumnRepresentation columnRepresentation, String value) {
 		try {
-			Field f = columnRepresentation.getField();
-			f.setAccessible(true);
-			if (ValidatorUtil.isNotEmpty(value)) {
+			if (columnRepresentation.isRelationOneTo()) {
+				setEntityRelationOneTo(obj, columnRepresentation, value);
+			} else if (ValidatorUtil.isNotEmpty(value)) {
+				Field f = columnRepresentation.getField();
+				f.setAccessible(true);
 				DataType type = columnRepresentation.getColumnType();
 				if (type.isInteger()) {
 					f.set(obj, DataTypeUtil.getValueInteger(value));
@@ -31,6 +39,38 @@ public abstract class ColumnHandle {
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Responsável por instânciar e setar o id de uma Entidade RelationOneTo.
+	 * @param obj
+	 * @param columnRepresentation
+	 * @param value
+	 */
+	private static void setEntityRelationOneTo(AbstractEntidade obj, ColumnRepresentation columnRepresentation, String value){
+		if (ValidatorUtil.isNotEmpty(value)) {
+			Field f = columnRepresentation.getField();
+			Class<?> c = f.getType();
+			if (AbstractEntidade.class.isAssignableFrom(c)) {
+				// TODO: mover validação para DBAnnotationUtil??
+
+				@SuppressWarnings("unchecked")
+				Class<? extends AbstractEntidade> clazz = (Class<? extends AbstractEntidade>) c;
+
+				// Instânciando Classe OneTo
+				AbstractEntidade entity = EntityHandle.getEntityInstance(clazz);
+				entity.setId(DataTypeUtil.getValueInteger(value));
+
+				try {
+					// Setando classe OneTo a Entidade
+					f.setAccessible(true);
+					f.set(obj, entity);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

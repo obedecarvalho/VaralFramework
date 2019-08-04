@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBColumn {
 	boolean primaryKey() default false;
+	boolean relationOneTo() default false;
 	String columnName();
 	DataType dataType();
 	//TODO: not null/default value/unique

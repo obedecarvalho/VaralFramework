@@ -34,7 +34,6 @@ import br.com.framework.util.LogUtil;
 import br.com.framework.util.ValidatorUtil;
 
 public abstract class AbstractDAO<T extends AbstractEntidade> {
-	//TODO: opção de busca relacoes fk
 	//TODO: classe para criar o arquivo de DB (.db)
 
 	private static final String SQL_INSERT = "INSERT INTO %s (%s) VALUES (%s);";
@@ -77,7 +76,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			Integer rowsInserted = stmn.executeUpdate();
 
 			//Obtendo o ID inserido
-			//TODO: extract??
+			//TODO: extract method??
 			ResultSet rs = stmn.getGeneratedKeys();
 			if (rs.next()) {
 				Integer id = rs.getInt(1);
@@ -179,7 +178,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	}
 
 	public void delete(Collection<T> list) throws DAOException {
-		//TODO: usar unico comando?? usar IN
+		//TODO: usar unico comando?? usar IN??
 		for (T obj : list) {
 			delete(obj);
 		}
@@ -209,7 +208,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			if (rs.next()) {
 				transforResultSetToEntity(rs, result);
 			}
-
+			//Log do select
 			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));
 
 			rs.close();
@@ -244,11 +243,13 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 			E result;
 
 			while (rs.next()) {
+				//Preenchendo Entidade 
 				result = getEntityInstance(clazz);
 				transforResultSetToEntity(rs, result);
 				results.add(result);
 			}
 
+			//Log do select
 			LogUtil.info(String.format(LOG_DB_SELECT_ALL, sql));
 
 			rs.close();
@@ -275,8 +276,40 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 		//TODO
 	}
 
-	public void findByIdRecursive(Integer id, Class<? extends AbstractEntidade> clazz) {
-		//TODO
+	public <E extends AbstractEntidade> E findByIdRecursive(Integer id, Class<? extends AbstractEntidade> clazz) throws DAOException {
+		if (ValidatorUtil.isEmpty(id)) {
+			return null;
+		}
+
+		//Informações
+		String tableName = getTableName(clazz);
+		List<String> columnsName = getTableColumnsName(clazz);
+		String fieldsString = listToString(columnsName);
+		String sql = String.format(SQL_SELECT_ID, fieldsString, tableName);
+
+		try {
+			//Select
+			Connection conn = getConnection();
+			PreparedStatement stmn = conn.prepareStatement(sql);
+			stmn.setInt(1, id);
+			stmn.setMaxRows(1);
+			ResultSet rs = stmn.executeQuery();
+
+			//Preenchendo Entidade 
+			E result = getEntityInstance(clazz);
+			if (rs.next()) {
+				transforResultSetToEntity(rs, result);
+			}
+			//Log do select
+			LogUtil.info(String.format(LOG_DB_SELECT, sql, result.getId()));
+
+			rs.close();
+			stmn.close();
+
+			return result;
+		} catch (SQLException e) {
+			throw new DAOException(e);
+		}
 	}
 
 	public void findAllRecursive(Class<? extends AbstractEntidade> clazz) {
@@ -284,7 +317,7 @@ public abstract class AbstractDAO<T extends AbstractEntidade> {
 	}
 
 	public void inactivate(T obj) {
-		//TODO
+		//TODO para AbstractEntidadeAuditavel
 	}
 
 	//=========================================

@@ -85,4 +85,17 @@ public abstract class DBAnnotationUtil {
 		return clazz.getDeclaredAnnotation(DBTable.class);
 	}
 
+	/**
+	 * Valida regras da EntityRepresentation.
+	 * @return
+	 */
+	static private boolean validate() {
+		//TODO
+		/*
+		 *	Validar:
+		 *		Tipos de dados compativeis com tipos da Annotation.
+		 *		Se Colunas com RelationOneToX são instancia de AbstractEntidade.
+		 */
+		return true;
+	}
 }
