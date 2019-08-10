@@ -16,13 +16,23 @@ import br.com.framework.util.LogUtil;
 
 public class DAOUtil {
 	
-	private static Connection connection = null;
+	private Connection connection = null;
 	
-	private static final String CONNECTION_STRING = "jdbc:sqlite:%s";
+	private final String CONNECTION_STRING = "jdbc:sqlite:%s";
 	//TODO: implementar forma de passar como parametro/salvar lista de connections (usar MAP para varias conexoes)
-	private static final String DEFAULT_DB_NAME = "dados/dados.db";
+	private final String DEFAULT_DB_NAME = "dados/dados.db";
 
-	public static Connection getConnection() throws DAOException {
+	private static DAOUtil instance = new DAOUtil();
+
+	private DAOUtil() {
+
+	}
+
+	public static DAOUtil getInstance() {
+		return instance;
+	}
+
+	public Connection getConnection() throws DAOException {
 		if (isEmpty(connection)) {
 			try {
 				connection = DriverManager.getConnection(String.format(CONNECTION_STRING, DEFAULT_DB_NAME));
@@ -38,7 +48,7 @@ public class DAOUtil {
 		return connection;
 	}
 	
-	public static void closeConnection() throws DAOException {
+	public void closeConnection() throws DAOException {
 		if (isNotEmpty(connection)) {
 			try {
 				connection.close();
@@ -48,5 +58,11 @@ public class DAOUtil {
 				throw new DAOException(e);
 			}
 		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		closeConnection();
+		super.finalize();
 	}
 }

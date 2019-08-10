@@ -41,7 +41,7 @@ public class ValidatorUtil {
 	}
 
 	private static boolean isEmpty(String string) {
-		if (string.trim() == "") {
+		if (string.trim().isEmpty()) {
 			return true;
 		}
 		return false;
