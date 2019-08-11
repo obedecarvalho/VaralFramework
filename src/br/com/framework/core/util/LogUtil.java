@@ -1,4 +1,4 @@
-package br.com.framework.util;
+package br.com.framework.core.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -4,9 +4,9 @@ import java.sql.Blob;
 import java.util.Calendar;
 import java.util.Date;
 
+import br.com.framework.core.util.ValidatorUtil;
 import br.com.framework.model.DataType;
 import br.com.framework.model.util.DataTypeUtil;
-import br.com.framework.util.ValidatorUtil;
 
 /**
  * Representa o mapeamento ColumnRepresentation para o valor do atributo uma Instancia de Entidade.

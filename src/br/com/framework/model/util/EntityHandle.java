@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.ValidatorUtil;
 import br.com.framework.model.domain.ColumnRepresentation;
 import br.com.framework.model.domain.ColumnValue;
 import br.com.framework.model.domain.ColumnValueRelationOneTo;
 import br.com.framework.model.domain.EntityRepresentation;
-import br.com.framework.util.ValidatorUtil;
 
 /**
  * Classe reponsável por Gerenciar alguns operações relacionadas a AbstractEntidade.

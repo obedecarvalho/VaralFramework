@@ -1,7 +1,8 @@
-package br.com.framework.model;
+package br.com.framework.core;
 
 import java.util.Date;
 
+import br.com.framework.model.DataType;
 import br.com.framework.model.annotation.DBColumn;
 
 public abstract class AbstractEntidadeAuditavel extends AbstractEntidade {

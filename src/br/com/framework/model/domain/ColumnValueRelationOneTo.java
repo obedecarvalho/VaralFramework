@@ -1,6 +1,6 @@
 package br.com.framework.model.domain;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
 
 public class ColumnValueRelationOneTo {
 	

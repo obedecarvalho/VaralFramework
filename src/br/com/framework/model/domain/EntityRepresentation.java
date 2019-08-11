@@ -3,7 +3,7 @@ package br.com.framework.model.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
 import br.com.framework.model.annotation.DBTable;
 
 /**

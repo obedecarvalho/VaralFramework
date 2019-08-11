@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import br.com.framework.util.LogUtil;
+import br.com.framework.core.util.LogUtil;
 import br.com.framework.view.listener.AbstractActionListener;
 
 public abstract class AbstractFrame extends JFrame {

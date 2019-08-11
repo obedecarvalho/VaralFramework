@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.ValidatorUtil;
 import br.com.framework.model.annotation.DBColumn;
 import br.com.framework.model.annotation.DBTable;
 import br.com.framework.model.domain.ColumnRepresentation;
 import br.com.framework.model.domain.EntityRepresentation;
-import br.com.framework.util.ValidatorUtil;
 
 /**
  * Classe utilizada para a manipulação de Annotation declaradas em classes relacionadas ao Bancos de Dados.

@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import br.com.framework.model.AbstractEntidade;
-import br.com.framework.util.ValidatorUtil;
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.ValidatorUtil;
 
 public class RecursiveSearchCache {
 

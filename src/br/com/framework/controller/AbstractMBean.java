@@ -2,8 +2,8 @@ package br.com.framework.controller;
 
 import java.util.List;
 
-import br.com.framework.model.AbstractEntidade;
-import br.com.framework.util.LogUtil;
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.LogUtil;
 
 public abstract class AbstractMBean<T extends AbstractEntidade> {
 	

@@ -1,4 +1,4 @@
-package br.com.framework.util;
+package br.com.framework.core.util;
 
 import java.util.List;
 

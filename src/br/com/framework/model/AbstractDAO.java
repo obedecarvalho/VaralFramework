@@ -1,21 +1,19 @@
 package br.com.framework.model;
 
-import static br.com.framework.util.ConstanteLog.LOG_DB_INSERT;
-import static br.com.framework.util.ConstanteLog.LOG_DB_DELETE;
-import static br.com.framework.util.ConstanteLog.LOG_DB_UPDATE;
-import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT;
-import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT_ALL;
-import static br.com.framework.util.ConstanteLog.LOG_DB_SELECT_CACHE;
-
 import static br.com.framework.model.util.EntityHandle.getTableName;
 import static br.com.framework.model.util.EntityHandle.getTableColumnsName;
 import static br.com.framework.model.util.EntityHandle.getTableColumns;
 import static br.com.framework.model.util.EntityHandle.getColumnsValue;
 import static br.com.framework.model.util.EntityHandle.getEntityInstance;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_DELETE;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_INSERT;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_SELECT;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_SELECT_ALL;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_SELECT_CACHE;
+import static br.com.framework.core.util.ConstanteLog.LOG_DB_UPDATE;
+import static br.com.framework.core.util.StringUtil.listToString;
+import static br.com.framework.core.util.StringUtil.stringMultiple;
 import static br.com.framework.model.util.EntityHandle.getColumnsRelationOneToValues;
-
-import static br.com.framework.util.StringUtil.listToString;
-import static br.com.framework.util.StringUtil.stringMultiple;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,14 +25,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.LogUtil;
+import br.com.framework.core.util.ValidatorUtil;
 import br.com.framework.model.domain.ColumnRepresentation;
 import br.com.framework.model.domain.ColumnValue;
 import br.com.framework.model.domain.ColumnValueRelationOneTo;
 import br.com.framework.model.domain.RecursiveSearchCache;
 import br.com.framework.model.util.ColumnHandle;
 import br.com.framework.model.util.DAOUtil;
-import br.com.framework.util.LogUtil;
-import br.com.framework.util.ValidatorUtil;
 
 public abstract class AbstractDAO<T extends AbstractEntidade> {
 	//TODO: classe para criar o arquivo de DB (.db)

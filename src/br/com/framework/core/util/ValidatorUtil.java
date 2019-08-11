@@ -1,9 +1,9 @@
-package br.com.framework.util;
+package br.com.framework.core.util;
 
 import java.util.Collection;
 import java.util.Map;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
 
 public class ValidatorUtil {
 	

@@ -1,9 +1,9 @@
 package br.com.framework.view;
 
-import static br.com.framework.util.ConstanteLog.LOG_FRAME_SELECT;
+import static br.com.framework.core.util.ConstanteLog.LOG_FRAME_SELECT;
 
-import br.com.framework.util.LogUtil;
-import br.com.framework.util.ValidatorUtil;
+import br.com.framework.core.util.LogUtil;
+import br.com.framework.core.util.ValidatorUtil;
 
 public class FramesManager {
 	

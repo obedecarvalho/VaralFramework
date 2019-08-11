@@ -1,18 +1,18 @@
 package br.com.framework.model.util;
 
-import static br.com.framework.util.ValidatorUtil.isEmpty;
-import static br.com.framework.util.ValidatorUtil.isNotEmpty;
-import static br.com.framework.util.ConstanteLog.LOG_CONNECTION_ERROR;
-import static br.com.framework.util.ConstanteLog.LOG_CONNECTION_OPEN;
-import static br.com.framework.util.ConstanteLog.LOG_CONNECTION_CLOSE;
+import static br.com.framework.core.util.ConstanteLog.LOG_CONNECTION_CLOSE;
+import static br.com.framework.core.util.ConstanteLog.LOG_CONNECTION_ERROR;
+import static br.com.framework.core.util.ConstanteLog.LOG_CONNECTION_OPEN;
+import static br.com.framework.core.util.ValidatorUtil.isEmpty;
+import static br.com.framework.core.util.ValidatorUtil.isNotEmpty;
 import static br.com.framework.model.DAOException.DAO_EXCEPTION_CONNECTION_ERROR;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import br.com.framework.core.util.LogUtil;
 import br.com.framework.model.DAOException;
-import br.com.framework.util.LogUtil;
 
 public class DAOUtil {
 	

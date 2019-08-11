@@ -2,10 +2,10 @@ package br.com.framework.model.util;
 
 import java.lang.reflect.Field;
 
-import br.com.framework.model.AbstractEntidade;
+import br.com.framework.core.AbstractEntidade;
+import br.com.framework.core.util.ValidatorUtil;
 import br.com.framework.model.DataType;
 import br.com.framework.model.domain.ColumnRepresentation;
-import br.com.framework.util.ValidatorUtil;
 
 public abstract class ColumnHandle {
 
