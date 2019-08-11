@@ -27,12 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import br.com.framework.model.domain.ColumnRepresentation;
+import br.com.framework.model.domain.ColumnValue;
+import br.com.framework.model.domain.ColumnValueRelationOneTo;
+import br.com.framework.model.domain.RecursiveSearchCache;
 import br.com.framework.model.util.ColumnHandle;
-import br.com.framework.model.util.ColumnRepresentation;
-import br.com.framework.model.util.ColumnValue;
-import br.com.framework.model.util.ColumnValueRelationOneTo;
 import br.com.framework.model.util.DAOUtil;
-import br.com.framework.model.util.RecursiveSearchCache;
 import br.com.framework.util.LogUtil;
 import br.com.framework.util.ValidatorUtil;
 

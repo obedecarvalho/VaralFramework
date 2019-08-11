@@ -1,7 +1,6 @@
 package br.com.framework.model;
 
 import br.com.framework.model.annotation.DBColumn;
-import br.com.framework.model.annotation.DataType;
 
 public abstract class AbstractEntidade {
 

@@ -3,7 +3,6 @@ package br.com.framework.model;
 import java.util.Date;
 
 import br.com.framework.model.annotation.DBColumn;
-import br.com.framework.model.annotation.DataType;
 
 public abstract class AbstractEntidadeAuditavel extends AbstractEntidade {
 	

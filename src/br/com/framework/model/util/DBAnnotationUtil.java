@@ -9,6 +9,8 @@ import java.util.Map;
 import br.com.framework.model.AbstractEntidade;
 import br.com.framework.model.annotation.DBColumn;
 import br.com.framework.model.annotation.DBTable;
+import br.com.framework.model.domain.ColumnRepresentation;
+import br.com.framework.model.domain.EntityRepresentation;
 import br.com.framework.util.ValidatorUtil;
 
 /**

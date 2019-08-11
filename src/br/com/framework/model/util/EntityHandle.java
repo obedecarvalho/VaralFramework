@@ -8,6 +8,10 @@ import java.util.Date;
 import java.util.List;
 
 import br.com.framework.model.AbstractEntidade;
+import br.com.framework.model.domain.ColumnRepresentation;
+import br.com.framework.model.domain.ColumnValue;
+import br.com.framework.model.domain.ColumnValueRelationOneTo;
+import br.com.framework.model.domain.EntityRepresentation;
 import br.com.framework.util.ValidatorUtil;
 
 /**

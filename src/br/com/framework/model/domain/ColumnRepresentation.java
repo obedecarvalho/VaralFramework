@@ -1,9 +1,9 @@
-package br.com.framework.model.util;
+package br.com.framework.model.domain;
 
 import java.lang.reflect.Field;
 
+import br.com.framework.model.DataType;
 import br.com.framework.model.annotation.DBColumn;
-import br.com.framework.model.annotation.DataType;
 
 /**
  * Classe que representa o mapeamento DBColumn <-> Field para atributos de uma entidade.

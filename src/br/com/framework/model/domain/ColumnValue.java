@@ -1,10 +1,11 @@
-package br.com.framework.model.util;
+package br.com.framework.model.domain;
 
 import java.sql.Blob;
 import java.util.Calendar;
 import java.util.Date;
 
-import br.com.framework.model.annotation.DataType;
+import br.com.framework.model.DataType;
+import br.com.framework.model.util.DataTypeUtil;
 import br.com.framework.util.ValidatorUtil;
 
 /**

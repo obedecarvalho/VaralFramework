@@ -1,4 +1,4 @@
-package br.com.framework.model.util;
+package br.com.framework.model.domain;
 
 import java.util.ArrayList;
 import java.util.List;
