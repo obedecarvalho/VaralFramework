@@ -13,7 +13,11 @@ public enum DataType {
 	/**
 	 * Type não oficial, variação de INTEGER (unixepcok)
 	 */
-	NDATETIME;
+	NDATETIME_UNIXEPOCH,
+	/**
+	 * TODO
+	 */
+	NDATETIME_ASCII;
 	
 	public boolean isInteger() {
 		return INTEGER.equals(this);
@@ -31,8 +35,8 @@ public enum DataType {
 		return TEXT.equals(this);
 	}
 
-	public boolean isNDateTime() {
-		return NDATETIME.equals(this);
+	public boolean isNDateTimeUnixEpoch() {
+		return NDATETIME_UNIXEPOCH.equals(this);
 	}
 
 	public boolean isNBoolean() {

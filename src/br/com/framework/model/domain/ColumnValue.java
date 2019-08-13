@@ -77,14 +77,14 @@ public class ColumnValue {
 	}
 	
 	public Date getValueDate() {
-		if (getType().isNDateTime() && ValidatorUtil.isNotEmpty(getValue())) {
+		if (getType().isNDateTimeUnixEpoch() && ValidatorUtil.isNotEmpty(getValue())) {
 			return DataTypeUtil.getValueDate(getValue());
 		}
 		return null;
 	}
 	
 	public Long getValueUnixEpoch() {
-		if (getType().isNDateTime() && ValidatorUtil.isNotEmpty(getValue())) {
+		if (getType().isNDateTimeUnixEpoch() && ValidatorUtil.isNotEmpty(getValue())) {
 			//return DataTypeUtil.getValueUnixEpoch(getValue());
 			return DataTypeUtil.getValueUnixEpoch(getValue());
 		}

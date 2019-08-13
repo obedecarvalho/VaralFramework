@@ -31,7 +31,7 @@ public abstract class ColumnHandle {
 					f.set(obj, value);
 				} else if (type.isBlob()) {
 					f.set(obj, DataTypeUtil.getValueBlob(value));
-				} else if (type.isNDateTime()) {
+				} else if (type.isNDateTimeUnixEpoch()) {
 					f.set(obj, DataTypeUtil.getValueDate(value));
 				} else if (type.isNBoolean()) {
 					f.set(obj, DataTypeUtil.getValueBoolean(value));

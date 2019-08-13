@@ -51,7 +51,7 @@ public abstract class EntityHandle {
 				f.setAccessible(true);
 				value = f.get(obj);
 				if (ValidatorUtil.isNotEmpty(value)) {
-					if (c.getColumnType().isNDateTime()) {
+					if (c.getColumnType().isNDateTimeUnixEpoch()) {
 						Date date = (Date) value;
 						columnValues.add(new ColumnValue(c, DataTypeUtil.getValueUnixEpoch(date).toString()));
 					} else {
