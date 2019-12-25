@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import br.com.framework.core.util.LogUtil;
 import br.com.framework.view.listener.AbstractActionListener;
 
+@Deprecated
 public abstract class AbstractFrame extends JFrame {
 	
 	public AbstractFrame(String frameName) {

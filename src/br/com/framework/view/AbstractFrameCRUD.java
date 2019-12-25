@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 
 import br.com.framework.view.listener.AbstractActionListener;
 
+@Deprecated
 public abstract class AbstractFrameCRUD extends AbstractFrame {
 	
 	public AbstractFrameCRUD(String frameName) {

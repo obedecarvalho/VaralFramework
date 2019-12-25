@@ -5,6 +5,7 @@ import static br.com.framework.core.util.ConstanteLog.LOG_FRAME_SELECT;
 import br.com.framework.core.util.LogUtil;
 import br.com.framework.core.util.ValidatorUtil;
 
+@Deprecated
 public class FramesManager {
 	
 	static private AbstractFrame frameAtual;

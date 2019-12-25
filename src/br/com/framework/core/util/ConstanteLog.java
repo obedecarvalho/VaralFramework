@@ -16,9 +16,11 @@ public abstract class ConstanteLog {
 	public static final String LOG_CONNECTION_CLOSE = "Conexão fechada: %s";
 
 	//FRAME
+	@Deprecated
 	public static final String LOG_FRAME_SELECT = "Frame selecionado: %s";
 
 	//LISTENER
+	@Deprecated
 	public static final String LOG_LISTENER_ACTION_PERFORMED = "Action Performed: %s";
 	
 }

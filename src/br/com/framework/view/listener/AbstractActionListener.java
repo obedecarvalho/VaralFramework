@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import br.com.framework.core.util.LogUtil;
 
+@Deprecated
 public abstract class AbstractActionListener implements ActionListener{
 	
 	@Override
